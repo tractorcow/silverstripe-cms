@@ -207,34 +207,33 @@ class CMSSiteTreeFilter_Search extends CMSSiteTreeFilter {
 		$query->setQueriedColumns(array('ID', 'ParentID'));
 
 		foreach($this->params as $name => $val) {
-			$SQL_val = Convert::raw2sql($val);
 
 			switch($name) {
 				case 'Term':
 					$query->whereAny(array(
-						"\"URLSegment\" LIKE '%$SQL_val%'",
-						"\"Title\" LIKE '%$SQL_val%'",
-						"\"MenuTitle\" LIKE '%$SQL_val%'",
-						"\"Content\" LIKE '%$SQL_val%'"
+						'"URLSegment" LIKE ?' => "%$val%",
+						'"Title" LIKE ?' => "%$val%",
+						'"MenuTitle" LIKE ?' => "%$val%",
+						'"Content" LIKE ?' => "%$val%",
 					));
 					break;
 
 				case 'LastEditedFrom':
-					$fromDate = new DateField(null, null, $SQL_val);
-					$query->where("\"LastEdited\" >= '{$fromDate->dataValue()}'");
+					$fromDate = new DateField(null, null, $val);
+					$query->where(array('"LastEdited" >= ?' => $fromDate->dataValue()));
 					break;
 
 				case 'LastEditedTo':
-					$toDate = new DateField(null, null, $SQL_val);
-					$query->where("\"LastEdited\" <= '{$toDate->dataValue()}'");
+					$toDate = new DateField(null, null, $val);
+					$query->where(array('"LastEdited" <= ?' => $toDate->dataValue()));
 					break;
 
 				case 'ClassName':
 					if($val && $val != 'All') {
-						$query->where("\"ClassName\" = '$SQL_val'");
+						$query->where(array('"ClassName" = ?' => $val));
 					}
 					break;
-
+					
 				default:
 					if(!empty($val) && $sng->hasDatabaseField($name)) {
 						$filter = $sng->dbObject($name)->defaultSearchFilter();

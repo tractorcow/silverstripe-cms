@@ -129,6 +129,7 @@ class SideReportWrapper extends SS_ReportWrapper {
  * @subpackage content
  */
 class SideReport_EmptyPages extends SS_Report {
+	
 	public function title() {
 		return _t('SideReport.EMPTYPAGES',"Pages with no content");
 	}
@@ -136,12 +137,23 @@ class SideReport_EmptyPages extends SS_Report {
 	public function group() {
 		return _t('SideReport.ContentGroupTitle', "Content reports");
 	}
+	
 	public function sort() {
 		return 100;
 	}
+	
 	public function sourceRecords($params = null) {
-		return DataObject::get("SiteTree", "\"ClassName\" != 'RedirectorPage' AND (\"Content\" = '' OR \"Content\" IS NULL OR \"Content\" LIKE '<p></p>' OR \"Content\" LIKE '<p>&nbsp;</p>')", '"Title"');
+		$column = '"SiteTree"."Content"';
+		return SiteTree::get()->where(array(
+				'"SiteTree"."ClassName" != ?' => 'RedirectorPage'
+			))->whereAny(array(
+				array("$column = ?" => ''),
+				"$column IS NULL",
+				array("$column LIKE ?" => '<p></p>'),
+				array("$column LIKE ?" => '<p>&nbsp;</p>')
+			))->sort('"Title"');
 	}
+	
 	public function columns() {
 		return array(
 			"Title" => array(
@@ -159,19 +171,26 @@ class SideReport_EmptyPages extends SS_Report {
  * @subpackage content
  */
 class SideReport_RecentlyEdited extends SS_Report {
+	
 	public function title() {
 		return _t('SideReport.LAST2WEEKS',"Pages edited in the last 2 weeks");
 	}
+	
 	public function group() {
 		return _t('SideReport.ContentGroupTitle', "Content reports");
 	}
+	
 	public function sort() {
 		return 200;
 	}
+	
 	public function sourceRecords($params = null) {
 		$threshold = strtotime('-14 days', SS_Datetime::now()->Format('U'));
-		return DataObject::get("SiteTree", "\"SiteTree\".\"LastEdited\" > '".date("Y-m-d H:i:s", $threshold)."'", "\"SiteTree\".\"LastEdited\" DESC");
+		return SiteTree::get()->where(array(
+			'"SiteTree"."LastEdited" > ?' => date("Y-m-d H:i:s", $threshold)
+		))->sort('"SiteTree"."LastEdited"', 'DESC');
 	}
+	
 	public function columns() {
 		return array(
 			"Title" => array(
@@ -198,11 +217,16 @@ class SideReport_BrokenLinks extends SS_Report {
 	public function sourceRecords($params = null) {
 		// Get class names for page types that are not virtual pages or redirector pages
 		$classes = array_diff(ClassInfo::subclassesFor('SiteTree'), ClassInfo::subclassesFor('VirtualPage'), ClassInfo::subclassesFor('RedirectorPage'));
-		$classNames = "'".join("','", $classes)."'";
-		
-		if (isset($_REQUEST['OnLive'])) $ret = Versioned::get_by_stage('SiteTree', 'Live', "\"ClassName\" IN ($classNames) AND \"HasBrokenLink\" = 1");
-		else $ret = DataObject::get('SiteTree', "\"ClassName\" IN ($classNames) AND \"HasBrokenLink\" = 1");
-		return $ret;
+		$classPlaceholders = DB::placeholders($classes);
+		$filter = array(
+			"\"SiteTree\".\"ClassName\" IN ($classPlaceholders)" => $classes,
+			"\"SiteTree\".\"HasBrokenLink\" = ?" => true
+		);
+		if (isset($_REQUEST['OnLive'])) {
+			return Versioned::get_by_stage('SiteTree', 'Live', $filter);
+		} else {
+			return SiteTree::get()->where($filter);
+		}
 	}
 	public function columns() {
 		return array(
@@ -236,11 +260,16 @@ class SideReport_BrokenFiles extends SS_Report {
 	public function sourceRecords($params = null) {
 		// Get class names for page types that are not virtual pages or redirector pages
 		$classes = array_diff(ClassInfo::subclassesFor('SiteTree'), ClassInfo::subclassesFor('VirtualPage'), ClassInfo::subclassesFor('RedirectorPage'));
-		$classNames = "'".join("','", $classes)."'";
-		
-		if (isset($_REQUEST['OnLive'])) $ret = Versioned::get_by_stage('SiteTree', 'Live', "\"ClassName\" IN ($classNames) AND \"HasBrokenFile\" = 1");
-		else $ret = DataObject::get('SiteTree', "\"ClassName\" IN ($classNames) AND \"HasBrokenFile\" = 1");
-		return $ret;
+		$classPlaceholders = DB::placeholders($classes);
+		$filter = array(
+			"\"SiteTree\".\"ClassName\" IN ($classPlaceholders)" => $classes,
+			"\"SiteTree\".\"HasBrokenFile\" = ?" => true
+		);
+		if (isset($_REQUEST['OnLive'])) {
+			return Versioned::get_by_stage('SiteTree', 'Live', $filter);
+		} else {
+			return SiteTree::get()->where($filter);
+		}
 	}
 	public function columns() {
 		return array(
@@ -270,10 +299,17 @@ class SideReport_BrokenVirtualPages extends SS_Report {
 		return _t('SideReport.BrokenLinksGroupTitle', "Broken links reports");
 	}
 	public function sourceRecords($params = null) {
-		$classNames = "'".join("','", ClassInfo::subclassesFor('VirtualPage'))."'";
-		if (isset($_REQUEST['OnLive'])) $ret = Versioned::get_by_stage('SiteTree', 'Live', "\"ClassName\" IN ($classNames) AND \"HasBrokenLink\" = 1");
-		else $ret = DataObject::get('SiteTree', "\"ClassName\" IN ($classNames) AND \"HasBrokenLink\" = 1");
-		return $ret;
+		$classes = ClassInfo::subclassesFor('VirtualPage');
+		$classPlaceholders = DB::placeholders($classes);
+		$filter = array(
+			"\"SiteTree\".\"ClassName\" IN ($classPlaceholders)" => $classes,
+			"\"SiteTree\".\"HasBrokenLink\" = ?" => true
+		);
+		if (isset($_REQUEST['OnLive'])) {
+			return Versioned::get_by_stage('SiteTree', 'Live', $filter);
+		} else {
+			return SiteTree::get()->where($filter);
+		}
 	}
 	
 	public function columns() {
@@ -304,11 +340,17 @@ class SideReport_BrokenRedirectorPages extends SS_Report {
 		return _t('SideReport.BrokenLinksGroupTitle', "Broken links reports");
 	}
 	public function sourceRecords($params = null) {
-		$classNames = "'".join("','", ClassInfo::subclassesFor('RedirectorPage'))."'";
-		
-		if (isset($_REQUEST['OnLive'])) $ret = Versioned::get_by_stage('SiteTree', 'Live', "\"ClassName\" IN ($classNames) AND \"HasBrokenLink\" = 1");
-		else $ret = DataObject::get('SiteTree', "\"ClassName\" IN ($classNames) AND \"HasBrokenLink\" = 1");
-		return $ret;
+		$classes = ClassInfo::subclassesFor('RedirectorPage');
+		$classPlaceholders = DB::placeholders($classes);
+		$filter = array(
+			"\"SiteTree\".\"ClassName\" IN ($classPlaceholders)" => $classes,
+			"\"SiteTree\".\"HasBrokenLink\" = ?" => true
+		);
+		if (isset($_REQUEST['OnLive'])) {
+			return Versioned::get_by_stage('SiteTree', 'Live', $filter);
+		} else {
+			return SiteTree::get()->where($filter);
+		}
 	}
 	
 	public function columns() {

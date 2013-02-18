@@ -1,4 +1,8 @@
 <?php
+
+/**
+ * @todo Cleanup, refactor, test this class
+ */
 class SiteTreeFolderExtension extends DataExtension {
 
 	/**
@@ -43,6 +47,6 @@ class SiteTreeFolderExtension extends DataExtension {
 		} else {
 			return "(\"ClassName\" = 'File' OR \"ClassName\" = 'Image')";
 		}
-		return $where;
+		return $where; // @todo - How?
 	}
 }

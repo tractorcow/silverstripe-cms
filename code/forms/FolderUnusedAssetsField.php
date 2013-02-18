@@ -4,6 +4,10 @@
  * @subpackage filesystem
  */
 class Folder_UnusedAssetsField extends CompositeField {
+	
+	/**
+	 * @var Folder
+	 */
 	protected $folder;
 	
 	public function __construct($folder) {

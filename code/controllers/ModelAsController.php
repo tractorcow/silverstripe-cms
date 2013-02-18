@@ -90,14 +90,16 @@ class ModelAsController extends Controller implements NestedController {
 		
 		// Find page by link, regardless of current locale settings
 		if(class_exists('Translatable')) Translatable::disable_locale_filter();
-		$sitetree = DataObject::get_one(
-			'SiteTree', 
-			sprintf(
-				'"URLSegment" = \'%s\' %s', 
-				Convert::raw2sql(rawurlencode($URLSegment)), 
-				(SiteTree::nested_urls() ? 'AND "ParentID" = 0' : null)
-			)
-		);
+		
+		// Select child page
+		$conditions = array('"SiteTree"."URLSegment"' => rawurlencode($URLSegment));
+		if(SiteTree::nested_urls()) {
+			$conditions[] = array('"SiteTree"."ParentID"' => 0);
+		}
+		$sitetree = DataObject::get_one('SiteTree', $conditions);
+		
+		// Check translation module
+		// @todo Refactor out module specific code
 		if(class_exists('Translatable')) Translatable::enable_locale_filter();
 		
 		if(!$sitetree) {
@@ -146,16 +148,17 @@ class ModelAsController extends Controller implements NestedController {
 	 * @return SiteTree
 	 */
 	static public function find_old_page($URLSegment,$parentID = 0, $ignoreNestedURLs = false) {
-		$URLSegment = Convert::raw2sql(rawurlencode($URLSegment));
+		$URLSegment = rawurlencode($URLSegment);
 		
 		$useParentIDFilter = SiteTree::nested_urls() && $parentID;
 				
 		// First look for a non-nested page that has a unique URLSegment and can be redirected to.
 		if(SiteTree::nested_urls()) {
-			$pages = DataObject::get(
-				'SiteTree', 
-				"\"URLSegment\" = '$URLSegment'" . ($useParentIDFilter ? ' AND "ParentID" = ' . (int)$parentID : '')
-			);
+			$filter = array('"SiteTree"."URLSegment"' => $URLSegment);
+			if($useParentIDFilter) {
+				$filter[] = array('"SiteTree"."ParentID"' => $parentID);
+			}
+			$pages = SiteTree::get()->where($filter);
 
 			if($pages && $pages->Count() == 1 && ($page = $pages->First())) {
 				$parent = $page->ParentID ? $page->Parent() : $page;
@@ -164,10 +167,17 @@ class ModelAsController extends Controller implements NestedController {
 		}
 		
 		// Get an old version of a page that has been renamed.
+		$oldFilter = array(
+			'"SiteTree_versions"."URLSegment"' => $URLSegment,
+			'"SiteTree_versions"."WasPublished"' => true
+		);
+		if($useParentIDFilter) {
+			$oldFilter[] = array('"SiteTree_versions"."ParentID"' => $parentID);
+		}
 		$query = new SQLQuery (
 			'"RecordID"',
 			'"SiteTree_versions"',
-			"\"URLSegment\" = '$URLSegment' AND \"WasPublished\" = 1" . ($useParentIDFilter ? ' AND "ParentID" = ' . (int)$parentID : ''),
+			$oldFilter,
 			'"LastEdited" DESC',
 			null,
 			null,

@@ -67,7 +67,7 @@ class ContentController extends Controller {
 		$parent = SiteTree::get_by_link($parentRef);
 		
 		if(!$parent && is_numeric($parentRef)) {
-			$parent = DataObject::get_by_id('SiteTree', Convert::raw2sql($parentRef));
+			$parent = DataObject::get_by_id('SiteTree', $parentRef);
 		}
 		
 		if($parent) return $parent->Children();
@@ -141,8 +141,8 @@ class ContentController extends Controller {
 			// See ModelAdController->getNestedController() for similar logic
 			if(class_exists('Translatable')) Translatable::disable_locale_filter();
 			// look for a page with this URLSegment
-			$child = $this->model->SiteTree->where(sprintf (
-				"\"ParentID\" = %s AND \"URLSegment\" = '%s'", $this->ID, Convert::raw2sql(rawurlencode($action))
+			$child = $this->model->SiteTree->where(array(
+				'"ParentID" = ? AND "URLSegment" = ?' => array($this->ID, rawurlencode($action))
 			))->First();
 			if(class_exists('Translatable')) Translatable::enable_locale_filter();
 			
@@ -236,8 +236,10 @@ class ContentController extends Controller {
 	 */
 	public function getMenu($level = 1) {
 		if($level == 1) {
-			$result = DataObject::get("SiteTree", "\"ShowInMenus\" = 1 AND \"ParentID\" = 0");
-
+			$result = SiteTree::get()->where(array(
+				'"SiteTree"."ShowInMenus"' => true,
+				'"SiteTree"."ParentID"' => 0
+			));
 		} else {
 			$parent = $this->data();
 			$stack = array($parent);
@@ -373,7 +375,9 @@ HTML;
 	 */
 	public function successfullyinstalled() {
 		// The manifest should be built by now, so it's safe to publish the 404 page
-		$fourohfour = Versioned::get_one_by_stage('ErrorPage', 'Stage', '"ErrorCode" = 404');
+		$fourohfour = Versioned::get_one_by_stage('ErrorPage', 'Stage', array(
+            '"ErrorCode"' => 404
+        ));
 		if($fourohfour) {
 			$fourohfour->write();
 			$fourohfour->publish("Stage", "Live");

@@ -120,7 +120,7 @@ class CMSPageAddController extends CMSPageEditController {
 		$suffix = isset($data['Suffix']) ? "-" . $data['Suffix'] : null;
 
 		if(!$parentID && isset($data['Parent'])) {
-			$page = SiteTree:: get_by_link(Convert::raw2sql($data['Parent']));
+			$page = SiteTree::get_by_link($data['Parent']);
 			if($page) $parentID = $page->ID;
 		}
 

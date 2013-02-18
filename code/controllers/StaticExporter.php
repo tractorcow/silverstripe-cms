@@ -73,7 +73,7 @@ class StaticExporter extends Controller {
 		`cd $tmpFolder; ln -s $f1; ln -s $f2`;
 
 		// iterate through all instances of SiteTree
-		$pages = DataObject::get("SiteTree");
+		$pages = SiteTree::get();
 		foreach($pages as $page) {
 			$subfolder   = "$tmpFolder/" . trim($page->RelativeLink(null, true), '/');
 			$contentfile = "$tmpFolder/" . trim($page->RelativeLink(null, true), '/') . '/index.html';
