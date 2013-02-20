@@ -93,7 +93,7 @@ class SS_Report extends ViewableData {
 	}
 	
 	/**
-	 * Return the {@link SQLQuery} that provides your report data.
+	 * Return the {@link SQLSelect} that provides your report data.
 	 */
 	public function sourceQuery($params) {
 		if($this->hasMethod('sourceRecords')) {

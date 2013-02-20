@@ -97,7 +97,7 @@ abstract class CMSSiteTreeFilter extends Object {
 			}
 
 			while(!empty($parents)) {
-				$q = new SQLQuery();
+				$q = new SQLSelect();
 				$q->setSelect(array('"ID"','"ParentID"'))
 					->setFrom('"SiteTree"')
 					->setWhere('"ID" in ('.implode(',',array_keys($parents)).')');
@@ -169,7 +169,7 @@ class CMSSiteTreeFilter_ChangedPages extends CMSSiteTreeFilter {
 	
 	public function pagesIncluded() {
 		$ids = array();
-		$q = new SQLQuery();
+		$q = new SQLSelect();
 		$q->setSelect(array('"SiteTree"."ID"','"SiteTree"."ParentID"'))
 			->setFrom('"SiteTree"')
 			->addLeftJoin('SiteTree_Live', '"SiteTree_Live"."ID" = "SiteTree"."ID"')

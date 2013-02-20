@@ -174,7 +174,7 @@ class ModelAsController extends Controller implements NestedController {
 		if($useParentIDFilter) {
 			$oldFilter[] = array('"SiteTree_versions"."ParentID"' => $parentID);
 		}
-		$query = new SQLQuery (
+		$query = new SQLSelect (
 			'"RecordID"',
 			'"SiteTree_versions"',
 			$oldFilter,
