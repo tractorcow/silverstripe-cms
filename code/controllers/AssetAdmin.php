@@ -105,10 +105,11 @@ JS
 		// Re-add previously removed "Name" filter as combined filter
 		// TODO Replace with composite SearchFilter once that API exists
 		if(isset($params['Name'])) {
-			$list = $list->where(sprintf(
-				'"Name" LIKE \'%%%s%%\' OR "Title" LIKE \'%%%s%%\'',
-				Convert::raw2sql($params['Name']),
-				Convert::raw2sql($params['Name'])
+			$list = $list->where(array(
+				'"Name" LIKE ? OR "Title" LIKE ?' => array(
+					'%'.$params['Name'].'%',
+					'%'.$params['Name'].'%'
+				)
 			));
 		}
 
@@ -322,9 +323,9 @@ JS
 	public function delete($data, $form) {
 		$className = $this->stat('tree_class');
 		
-		$record = DataObject::get_by_id($className, Convert::raw2sql($data['ID']));
+		$record = DataObject::get_by_id($className, $data['ID']);
 		if($record && !$record->canDelete()) return Security::permissionFailure();
-		if(!$record || !$record->ID) throw new HTTPResponse_Exception("Bad record ID #" . (int)$data['ID'], 404);
+		if(!$record || !$record->ID) throw new SS_HTTPResponse_Exception("Bad record ID #" . (int)$data['ID'], 404);
 		$parentID = $record->ParentID;
 		$record->delete();
 		$this->setCurrentPageID(null);
@@ -529,10 +530,10 @@ JS
 	}
 	
 	/**
-     * #################################
-     *        Garbage collection.
-     * #################################
-    */
+	 * #################################
+	 *        Garbage collection.
+	 * #################################
+	 */
 	
 	/**
 	 * Removes all unused thumbnails from the file store
