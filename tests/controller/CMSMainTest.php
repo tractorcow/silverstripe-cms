@@ -13,6 +13,8 @@ class CMSMainTest extends FunctionalTest {
 		$cache = SS_Cache::factory('CMSMain_SiteTreeHints');
 		$cache->clean(Zend_Cache::CLEANING_MODE_ALL);
 
+		$this->logInWithPermission('ADMIN');
+
 		$rawHints = singleton('CMSMain')->SiteTreeHints();
 		$this->assertNotNull($rawHints);
 
@@ -46,12 +48,14 @@ class CMSMainTest extends FunctionalTest {
 			$hints['Root']['disallowedChildren'],
 			'Limits root classes'
 		);
-		$this->assertNotContains(
-			'CMSMainTest_ClassA',
-			// Lenient checks because other modules might influence state
-			(array)@$hints['Page']['disallowedChildren'],
-			'Does not limit types on unlimited parent'
-		);
+		if(isset($hints['Page']['disallowedChildren'])) {
+			$this->assertNotContains(
+				'CMSMainTest_ClassA',
+				// Lenient checks because other modules might influence state
+				$hints['Page']['disallowedChildren'],
+				'Does not limit types on unlimited parent'
+			);
+		}
 		$this->assertContains(
 			'Page',
 			$hints['CMSMainTest_ClassA']['disallowedChildren'], 

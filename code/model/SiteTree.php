@@ -999,7 +999,7 @@ class SiteTree extends DataObject implements PermissionProvider,i18nEntityProvid
 	 * 
 	 * Denies permission if any of the following conditions is TRUE:
 	 * - canCreate() returns FALSE on any extension
-	 * - $can_create is set to FALSE and the site is not in "dev mode"
+	 * - Creation of pages is disabled at the SiteConfig level
 	 * 
 	 * Use {@link canAddChildren()} to control behaviour of creating children under this page.
 	 * 
@@ -1015,12 +1015,14 @@ class SiteTree extends DataObject implements PermissionProvider,i18nEntityProvid
 		}
 
 		if($member && Permission::checkMember($member, "ADMIN")) return true;
-		
+
 		// Standard mechanism for accepting permission changes from extensions
 		$extended = $this->extendedCan('canCreate', $member);
 		if($extended !== null) return $extended;
-		
-		return $this->stat('can_create') != false || Director::isDev();
+
+		// This doesn't necessarily mean we are creating a root page, but that
+		// we don't know if there is a parent, so default to this permission
+		return SiteConfig::current_site_config()->canCreateTopLevel($member);
 	}
 
 
@@ -1260,7 +1262,7 @@ class SiteTree extends DataObject implements PermissionProvider,i18nEntityProvid
  			if(empty(self::$cache_permissions[$cacheKey])) self::$cache_permissions[$cacheKey] = array();
  			self::$cache_permissions[$cacheKey] = $combinedStageResult + self::$cache_permissions[$cacheKey];
  
-  		return $combinedStageResult;
+			return $combinedStageResult;
 		} else {
 			return array();
 		}

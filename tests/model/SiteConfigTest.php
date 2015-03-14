@@ -7,13 +7,15 @@
  * SiteTreePermissionsTest
  */
 class SiteConfigTest extends SapphireTest {
+
+	protected static $fixture_file = 'SiteConfigTest.yml';
 	
 	protected $illegalExtensions = array(
 		'SiteTree' => array('SiteTreeSubsites')
 	);
 	
 	public function testAvailableThemes() {
-		$config = SiteConfig::current_site_config();
+		$config = $this->objFromFixture('SiteConfig', 'default');
 		$ds = DIRECTORY_SEPARATOR;
 		$testThemeBaseDir = TEMP_FOLDER . $ds . 'test-themes';
 		
@@ -34,5 +36,38 @@ class SiteConfigTest extends SapphireTest {
 		
 		Filesystem::removeFolder($testThemeBaseDir);
 	}
+
+	public function testCanCreateRootPages() {
+		$config = $this->objFromFixture('SiteConfig', 'default');
+
+		// Log in without pages admin access
+		$this->logInWithPermission('CMS_ACCESS_AssetAdmin');
+		$this->assertFalse($config->canCreateTopLevel());
+
+		// Login with necessary edit permission
+		$perms = SiteConfig::config()->required_permission;
+		$this->logInWithPermission(reset($perms));
+		$this->assertTrue($config->canCreateTopLevel());
+	}
+
+	public function testCanViewPages() {
+		$config = $this->objFromFixture('SiteConfig', 'default');
+		$this->assertTrue($config->canView());
+	}
+
+	public function testCanEditPages() {
+		$config = $this->objFromFixture('SiteConfig', 'default');
+		
+		// Log in without pages admin access
+		$this->logInWithPermission('CMS_ACCESS_AssetAdmin');
+		$this->assertFalse($config->canEdit());
+
+		// Login with necessary edit permission
+		$perms = SiteConfig::config()->required_permission;
+		$this->logInWithPermission(reset($perms));
+		$this->assertTrue($config->canEdit());
+	}
+
+
 	
 }

@@ -20,6 +20,13 @@ class SiteTreeTest extends SapphireTest {
 		'SiteTreeTest_NotRoot',
 		'SiteTreeTest_StageStatusInherit',
 	);
+
+	/**
+	 * Ensure any current member is logged out
+	 */
+	public function logOut() {
+		if($member = Member::currentUser()) $member->logOut();
+	}
 	
 	public function testCreateDefaultpages() {
 			$remove = DataObject::get('SiteTree');
@@ -438,9 +445,14 @@ class SiteTreeTest extends SapphireTest {
 		$editor = $this->objFromFixture("Member", "editor");
 		
 		$home = $this->objFromFixture("Page", "home");
+		$staff = $this->objFromFixture("Page", "staff");
 		$products = $this->objFromFixture("Page", "products");
 		$product1 = $this->objFromFixture("Page", "product1");
 		$product4 = $this->objFromFixture("Page", "product4");
+
+		// Test logged out users cannot edit
+		$this->logOut();
+		$this->assertFalse($staff->canEdit());
 
 		// Can't edit a page that is locked to admins
 		$this->assertFalse($home->canEdit($editor));
@@ -463,6 +475,21 @@ class SiteTreeTest extends SapphireTest {
 
 		$this->assertTrue($page->canEdit($allSectionMember));
 		$this->assertFalse($page->canEdit($securityAdminMember));
+	}
+
+	public function testCreatePermissions() {
+		// Test logged out users cannot create
+		$this->logOut();
+		$this->assertFalse(singleton('SiteTree')->canCreate());
+
+		// Login with another permission
+		$this->logInWithPermission('DUMMY');
+		$this->assertFalse(singleton('SiteTree')->canCreate());
+
+		// Login with basic CMS permission
+		$perms = SiteConfig::config()->required_permission;
+		$this->logInWithPermission(reset($perms));
+		$this->assertTrue(singleton('SiteTree')->canCreate());
 	}
 	
 	public function testEditPermissionsOnDraftVsLive() {
