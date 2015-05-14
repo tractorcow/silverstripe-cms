@@ -67,8 +67,8 @@ en:
     DELETE_PAGES: 'Delete from published site'
     PUBLISHED_PAGES: 'Published %d pages, %d failures'
     PUBLISH_PAGES: Publish
-    UNPUBLISHED_PAGES: 'Un-published %d pages'
-    UNPUBLISH_PAGES: Un-publish
+    UNPUBLISHED_PAGES: 'Unpublished %d pages'
+    UNPUBLISH_PAGES: Unpublish
   CMSMain:
     ACCESS: 'Access to ''{title}'' section'
     ACCESS_HELP: 'Allow viewing of the section containing page tree and content. View and edit permissions can be handled through page specific dropdowns, as well as the separate "Content permissions".'
@@ -100,8 +100,11 @@ en:
     REMOVED: 'Deleted ''{title}''{description} from live site'
     REMOVEDPAGE: 'Removed ''{title}'' from the published site'
     REMOVEDPAGEFROMDRAFT: 'Removed ''%s'' from the draft site'
-    RESTORE: Restore
+    RESTORE: 'Restore draft'
+    RESTORE_TO_ROOT: 'Restore draft at top level'
+    RESTORE_TO_ROOT_DESC: 'Restore the archived version to draft as a top level page'
     RESTORED: 'Restored ''{title}'' successfully'
+    RESTORE_DESC: 'Restore the archived version to draft'
     ROLLBACK: 'Roll back to this version'
     ROLLEDBACKPUBv2: 'Rolled back to published version.'
     ROLLEDBACKVERSIONv2: 'Rolled back to version #%d.'
@@ -154,7 +157,7 @@ en:
   CMSSiteTreeFilter_ChangedPages:
     Title: 'Changed pages'
   CMSSiteTreeFilter_DeletedPages:
-    Title: 'All pages, including deleted'
+    Title: 'All pages, including archived'
   CMSSiteTreeFilter_Search:
     Title: 'All pages'
   ContentControl:
