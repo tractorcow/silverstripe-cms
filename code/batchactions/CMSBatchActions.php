@@ -37,6 +37,34 @@ class CMSBatchAction_Unpublish extends CMSBatchAction {
 			_t('CMSBatchActions.UNPUBLISHED_PAGES', 'Un-published %d pages')
 		);
 	}
+
+	public function applicablePages($ids) {
+		return $this->applicablePagesHelper($ids, 'canDeleteFromLive', false, true);
+	}
+}
+
+/**
+ * Archives a page, removing it from both live and stage
+ *
+ * @package cms
+ * @subpackage batchaction
+ */
+class CMSBatchAction_Archive extends CMSBatchAction {
+	
+	public function getActionTitle() {
+		return _t('CMSBatchActions.ARCHIVE', 'Archive');
+	}
+
+	public function run(SS_List $pages) {
+		return $this->batchaction($pages, 'doArchive',
+			_t('CMSBatchActions.ARCHIVED_PAGES', 'Archived %d pages')
+		);
+	}
+
+	public function applicablePages($ids) {
+		return $this->applicablePagesHelper($ids, 'canArchive', true, true);
+	}
+
 }
 
 /**
@@ -93,14 +121,15 @@ class CMSBatchAction_Delete extends CMSBatchAction {
  * 
  * @package cms
  * @subpackage batchaction
+ * @deprecated since version 4.0
  */
 class CMSBatchAction_DeleteFromLive extends CMSBatchAction {
 	public function getActionTitle() {
 		return _t('CMSBatchActions.DELETE_PAGES', 'Delete from published site');
 	}
 
-
 	public function run(SS_List $pages) {
+		Deprecation::notice('4.0', 'Delete From Live is deprecated. Use Un-publish instead');
 		$status = array(
 			'modified'=>array(),
 			'deleted'=>array()

@@ -2334,10 +2334,10 @@ class SiteTree extends DataObject implements PermissionProvider,i18nEntityProvid
 					);
 				}
 			} else {
-				if($this->canDelete()) {
-					// "delete"
+				if($this->canArchive()) {
+					// "archive"
 					$moreOptions->push(
-						FormAction::create('delete',_t('CMSMain.DELETE','Delete draft'))->addExtraClass('delete ss-ui-action-destructive')
+						FormAction::create('archive',_t('CMSMain.ARCHIVE','Archive'))->addExtraClass('delete ss-ui-action-destructive')
 					);
 				}
 			
@@ -2519,6 +2519,32 @@ class SiteTree extends DataObject implements PermissionProvider,i18nEntityProvid
 		Versioned::reading_stage($oldStage);
 		
 		return $result;
+	}
+
+	/**
+	 * Removes the page from both live and stage
+	 */
+	public function doArchive() {
+		$this->doUnpublish();
+		$this->delete();
+	}
+
+	/**
+	 * Check if the current user is allowed to archive this page.
+	 * If extended, ensure that both canDelete and canDeleteFromLive are extended also
+	 *
+	 * @param Member $member
+	 * @return bool
+	 */
+	public function canArchive($member = null) {
+		$member = $member ?: Member::currentUser();
+		
+		// Standard mechanism for accepting permission changes from extensions
+		$extended = $this->extendedCan('canArchive', $member);
+		if($extended !==null) return $extended;
+
+		// Check both stages
+		return $this->canDeleteFromLive($member) && $this->canDelete($member);
 	}
 
 	/**
