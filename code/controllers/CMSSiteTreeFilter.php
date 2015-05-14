@@ -286,7 +286,7 @@ class CMSSiteTreeFilter_DeletedPages extends CMSSiteTreeFilter {
 	protected $numChildrenMethod = 'numHistoricalChildren';
 	
 	static public function title() {
-		return _t('CMSSiteTreeFilter_DeletedPages.Title', "All pages, including deleted");
+		return _t('CMSSiteTreeFilter_DeletedPages.Title', "All pages, including archived");
 	}
 	
 	public function getFilteredPages() {

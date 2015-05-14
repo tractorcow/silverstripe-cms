@@ -2334,10 +2334,15 @@ class SiteTree extends DataObject implements PermissionProvider,i18nEntityProvid
 					);
 				}
 			} else {
-				if($this->canDelete()) {
-					// "delete"
+				if($this->canArchive()) {
+					// "archive"
 					$moreOptions->push(
-						FormAction::create('delete',_t('CMSMain.DELETE','Delete draft'))->addExtraClass('delete ss-ui-action-destructive')
+						FormAction::create('archive',_t('CMSMain.ARCHIVE','Archive'))
+							->setDescription(_t(
+								'SiteTree.BUTTONARCHIVEDESC',
+								'Remove this page from the draft and published sites'
+							))
+							->addExtraClass('delete ss-ui-action-destructive')
 					);
 				}
 			
@@ -2379,6 +2384,7 @@ class SiteTree extends DataObject implements PermissionProvider,i18nEntityProvid
 	 * 
 	 * @uses SiteTreeExtension->onBeforePublish()
 	 * @uses SiteTreeExtension->onAfterPublish()
+	 * @return bool True if published
 	 */
 	public function doPublish() {
 		if (!$this->canPublish()) return false;
@@ -2487,6 +2493,7 @@ class SiteTree extends DataObject implements PermissionProvider,i18nEntityProvid
 		}
 		
 		$this->invokeWithExtensions('onAfterRevertToLive', $this);
+		return true;
 	}
 	
 	/**
@@ -2519,6 +2526,37 @@ class SiteTree extends DataObject implements PermissionProvider,i18nEntityProvid
 		Versioned::reading_stage($oldStage);
 		
 		return $result;
+	}
+
+	/**
+	 * Removes the page from both live and stage
+	 *
+	 * @return bool Success
+	 */
+	public function doArchive() {
+		if($this->doUnpublish()) {
+			$this->delete();
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Check if the current user is allowed to archive this page.
+	 * If extended, ensure that both canDelete and canDeleteFromLive are extended also
+	 *
+	 * @param Member $member
+	 * @return bool
+	 */
+	public function canArchive($member = null) {
+		$member = $member ?: Member::currentUser();
+		
+		// Standard mechanism for accepting permission changes from extensions
+		$extended = $this->extendedCan('canArchive', $member);
+		if($extended !==null) return $extended;
+
+		// Check both stages
+		return $this->canDeleteFromLive($member) && $this->canDelete($member);
 	}
 
 	/**
@@ -2725,9 +2763,9 @@ class SiteTree extends DataObject implements PermissionProvider,i18nEntityProvid
 						'title' => _t('SiteTree.REMOVEDFROMDRAFTHELP', 'Page is published, but has been deleted from draft'),
 					);
 				} else {
-					$flags['deletedonlive'] = array(
-						'text' => _t('SiteTree.DELETEDPAGESHORT', 'Deleted'),
-						'title' => _t('SiteTree.DELETEDPAGEHELP', 'Page is no longer published'),
+					$flags['archived'] = array(
+						'text' => _t('SiteTree.ARCHIVEDPAGESHORT', 'Archived'),
+						'title' => _t('SiteTree.ARCHIVEDPAGEHELP', 'Page is removed from draft and live'),
 					);
 				}
 			} else if($this->IsAddedToStage) {

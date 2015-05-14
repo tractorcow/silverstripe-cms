@@ -154,7 +154,7 @@ en:
   CMSSiteTreeFilter_ChangedPages:
     Title: 'Changed pages'
   CMSSiteTreeFilter_DeletedPages:
-    Title: 'All pages, including deleted'
+    Title: 'All pages, including archived'
   CMSSiteTreeFilter_Search:
     Title: 'All pages'
   ContentControl:
