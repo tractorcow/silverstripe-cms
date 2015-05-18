@@ -2340,7 +2340,7 @@ class SiteTree extends DataObject implements PermissionProvider,i18nEntityProvid
 						FormAction::create('archive',_t('CMSMain.ARCHIVE','Archive'))
 							->setDescription(_t(
 								'SiteTree.BUTTONARCHIVEDESC',
-								'Remove this page from the draft and published sites'
+								'Unpublish and send to archive'
 							))
 							->addExtraClass('delete ss-ui-action-destructive')
 					);

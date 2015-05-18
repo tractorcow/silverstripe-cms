@@ -33,7 +33,7 @@
 	"Tree.ShowAsList": "Show children as list",
 	"CMSMain.ConfirmRestoreFromLive": "Are you sure you want to revert draft to when the page was last published?",
 	"CMSMain.RollbackToVersion": "Do you really want to roll back to version #%s of this page?",
-	"CMSMain.Archive": "Are you sure you wish to archive this page?\n\nThis will be remove the page from both the draft and published sites without discarding the page history.",
+	"CMSMain.Archive": "Are you sure you want to archive this page?\n\nThe page will be unpublished and sent to the archive.",
 	"CMSMain.Unpublish": "Are you sure you want to remove your page from the published site?\n\nThis page will still be available in the sitetree as draft.",
 	"CMSMain.DeleteFromDraft": "Are you sure you want to remove your page from the draft site?\n\nThis page will remain on the published site.",
 	"URLSEGMENT.Edit": "Edit",
