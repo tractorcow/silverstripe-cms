@@ -155,7 +155,7 @@ en:
     FILTERDATETO: To
     FILTERLABELTEXT: Content
   CMSSiteTreeFilter_ChangedPages:
-    Title: 'Changed pages'
+    Title: 'Modified pages'
   CMSSiteTreeFilter_DeletedPages:
     Title: 'All pages, including archived'
   CMSSiteTreeFilter_Search:

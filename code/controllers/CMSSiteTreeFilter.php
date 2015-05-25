@@ -305,7 +305,7 @@ class CMSSiteTreeFilter_DeletedPages extends CMSSiteTreeFilter {
 class CMSSiteTreeFilter_ChangedPages extends CMSSiteTreeFilter {
 	
 	static public function title() {
-		return _t('CMSSiteTreeFilter_ChangedPages.Title', "Changed pages");
+		return _t('CMSSiteTreeFilter_ChangedPages.Title', "Modified pages");
 	}
 	
 	public function getFilteredPages() {
@@ -354,7 +354,7 @@ class CMSSiteTreeFilter_StatusRemovedFromDraftPages extends CMSSiteTreeFilter {
 class CMSSiteTreeFilter_StatusDraftPages extends CMSSiteTreeFilter {
 	
 	static public function title() {
-		return _t('CMSSiteTreeFilter_StatusDraftPages.Title', 'Draft unpublished pages');
+		return _t('CMSSiteTreeFilter_StatusDraftPages.Title', 'Draft pages');
 	}
 	
 	/**
