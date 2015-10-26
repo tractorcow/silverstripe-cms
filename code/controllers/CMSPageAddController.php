@@ -60,7 +60,7 @@ class CMSPageAddController extends CMSPageEditController {
 					)
 				)
 			),
-			$typeField = new OptionsetField(
+			$typeField = new RadioField(
 				"PageType",
 				sprintf($numericLabelTmpl, 2, _t('CMSMain.ChoosePageType', 'Choose page type')),
 				$pageTypes,

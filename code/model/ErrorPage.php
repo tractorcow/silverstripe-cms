@@ -180,7 +180,7 @@ class ErrorPage extends Page {
 		
 		$fields->addFieldToTab(
 			"Root.Main", 
-			new DropdownField(
+			new OptionField(
 				"ErrorCode",
 				$this->fieldLabel('ErrorCode'),
 				array(

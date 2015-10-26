@@ -380,7 +380,7 @@ JS
 			'video' => _t('AssetAdmin.AppCategoryVideo', 'Video'),
 		);
 		$context->addField(
-			$typeDropdown = new DropdownField(
+			$typeDropdown = new OptionField(
 				'q[AppCategory]',
 				_t('AssetAdmin.Filetype', 'File type'),
 				$appCategories
