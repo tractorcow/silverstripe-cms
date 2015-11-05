@@ -123,11 +123,11 @@ class BrokenLinksReport extends SS_Report {
 	}
 	public function parameterFields() {
 		return new FieldList(
-			new DropdownField('CheckSite', _t('BrokenLinksReport.CheckSite','Check site'), array(
+			new SelectField('CheckSite', _t('BrokenLinksReport.CheckSite','Check site'), array(
 				'Published' => _t('BrokenLinksReport.CheckSiteDropdownPublished', 'Published Site'),
 				'Draft' => _t('BrokenLinksReport.CheckSiteDropdownDraft', 'Draft Site')
 			)),
-			new DropdownField(
+			new SelectField(
 				'Reason', 
 				_t('BrokenLinksReport.ReasonDropdown', 'Problem to check'), 
 				array(

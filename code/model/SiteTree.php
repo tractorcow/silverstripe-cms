@@ -2099,13 +2099,13 @@ class SiteTree extends DataObject implements PermissionProvider,i18nEntityProvid
 		$fields = new FieldList(
 			$rootTab = new TabSet("Root",
 				$tabBehaviour = new Tab('Settings',
-					new DropdownField(
+					new SelectField(
 						"ClassName", 
 						$this->fieldLabel('ClassName'), 
 						$this->getClassDropdown()
 					),
 					$parentTypeSelector = new CompositeField(
-						new OptionsetField("ParentType", _t("SiteTree.PAGELOCATION", "Page location"), array(
+						new RadioField("ParentType", _t("SiteTree.PAGELOCATION", "Page location"), array(
 							"root" => _t("SiteTree.PARENTTYPE_ROOT", "Top-level page"),
 							"subpage" => _t("SiteTree.PARENTTYPE_SUBPAGE", "Sub-page underneath a parent page"),
 						)),
@@ -2115,22 +2115,22 @@ class SiteTree extends DataObject implements PermissionProvider,i18nEntityProvid
 						new CheckboxField("ShowInMenus", $this->fieldLabel('ShowInMenus')),
 						new CheckboxField("ShowInSearch", $this->fieldLabel('ShowInSearch'))
 					),
-					$viewersOptionsField = new OptionsetField(
+					$viewersOptionsField = new RadioField(
 						"CanViewType", 
 						_t('SiteTree.ACCESSHEADER', "Who can view this page?")
 					),
-					$viewerGroupsField = ListboxField::create("ViewerGroups", _t('SiteTree.VIEWERGROUPS', "Viewer Groups"))
+					$viewerGroupsField = MultiSelectField::create("ViewerGroups", _t('SiteTree.VIEWERGROUPS', "Viewer Groups"))
 						->setMultiple(true)
 						->setSource($groupsMap)
 						->setAttribute(
 							'data-placeholder', 
 							_t('SiteTree.GroupPlaceholder', 'Click to select group')
 						),
-					$editorsOptionsField = new OptionsetField(
+					$editorsOptionsField = new RadioField(
 						"CanEditType", 
 						_t('SiteTree.EDITHEADER', "Who can edit this page?")
 					),
-					$editorGroupsField = ListboxField::create("EditorGroups", _t('SiteTree.EDITORGROUPS', "Editor Groups"))
+					$editorGroupsField = MultiSelectField::create("EditorGroups", _t('SiteTree.EDITORGROUPS', "Editor Groups"))
 						->setMultiple(true)
 						->setSource($groupsMap)
 						->setAttribute(

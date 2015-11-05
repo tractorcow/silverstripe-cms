@@ -327,12 +327,12 @@ class CMSMain extends LeftAndMain implements CurrentPageIdentifier, PermissionPr
 			_t('CMSSearch.FILTERDATETO', 'To')
 		);
 		$dateTo->setConfig('showcalendar', true);
-		$pageFilter = new DropdownField(
+		$pageFilter = new SelectField(
 			'q[FilterClass]',
 			_t('CMSMain.PAGES', 'Page status'),
 			CMSSiteTreeFilter::get_all_filters()
 		);
-		$pageClasses = new DropdownField(
+		$pageClasses = new SelectField(
 			'q[ClassName]',
 			_t('CMSMain.PAGETYPEOPT', 'Page type', 'Dropdown for limiting search to a page type'),
 			$this->getPageTypes()

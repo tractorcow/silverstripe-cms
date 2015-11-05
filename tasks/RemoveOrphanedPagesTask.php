@@ -109,7 +109,7 @@ in the other stage:<br />
 		}
 		
 		if($orphans && $orphans->Count()) {
-			$fields->push(new CheckboxSetField('OrphanIDs', false, $source));
+			$fields->push(new MultiCheckboxField('OrphanIDs', false, $source));
 			$fields->push(new LiteralField(
 				'SelectAllLiteral',
 				sprintf(
@@ -124,7 +124,7 @@ in the other stage:<br />
 					_t('RemoveOrphanedPagesTask.UNSELECTALL', 'unselect all')
 				)
 			));
-			$fields->push(new OptionSetField(
+			$fields->push(new RadioField(
 				'OrphanOperation', 
 				_t('RemoveOrphanedPagesTask.CHOOSEOPERATION', 'Choose operation:'),
 				array(
